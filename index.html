@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éclat Events — Luxury Event Planning</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+:root {
+  --gold: #C9A96E; --gold-lt: #E8D5B0;
+  --dark: #0D0D0D; --dark2: #141414; --dark3: #1C1C1C;
+  --white: #FAFAFA; --muted: rgba(250,250,250,0.5);
+  --border: rgba(201,169,110,0.15);
+}
+body { background: var(--dark); color: var(--white); font-family: 'Jost', sans-serif; font-weight: 300; overflow-x: hidden; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; }
+
+/* NOISE */
+body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9000; opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* NAVBAR */
+#navbar { position:fixed; top:0; left:0; right:0; z-index:500; padding:22px 64px; display:flex; align-items:center; justify-content:space-between; gap:24px; background:linear-gradient(180deg,rgba(13,13,13,0.9) 0%,transparent 100%); transition:background .4s,padding .3s; }
+#navbar.stuck { background:rgba(13,13,13,0.96); padding:14px 64px; backdrop-filter:blur(18px); border-bottom:1px solid var(--border); }
+.logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:5px; color:var(--gold); text-transform:uppercase; white-space:nowrap; flex-shrink:0; }
+.logo em { color:var(--white); font-style:italic; }
+.nav-links { display:flex; gap:36px; list-style:none; align-items:center; }
+.nav-links a { font-size:10.5px; letter-spacing:2.5px; text-transform:uppercase; color:rgba(250,250,250,0.65); transition:color .25s; }
+.nav-links a:hover { color:var(--gold); }
+.nav-btn { background:transparent; border:1px solid var(--gold); color:var(--gold); padding:9px 24px; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; transition:all .25s; white-space:nowrap; flex-shrink:0; }
+.nav-btn:hover { background:var(--gold); color:var(--dark); }
+.nav-ham { display:none; flex-direction:column; gap:5px; background:none; border:none; padding:4px; }
+.nav-ham span { display:block; width:22px; height:1px; background:var(--gold); }
+
+/* HERO */
+.hero { min-height:100vh; padding:100px 64px 80px; display:grid; grid-template-columns:1fr minmax(0,460px); align-items:center; gap:60px; position:relative; overflow:hidden; }
+.hero-glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse 60% 70% at 75% 45%,rgba(201,169,110,0.07) 0%,transparent 65%),radial-gradient(ellipse 40% 40% at 15% 75%,rgba(201,169,110,0.04) 0%,transparent 55%); }
+.hero-gridlines { position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(201,169,110,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,0.04) 1px,transparent 1px); background-size:72px 72px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 80%); }
+
+.hero-left { position:relative; z-index:2; animation:riseUp 1s ease both; }
+@keyframes riseUp { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+
+.eyebrow { display:flex; align-items:center; gap:14px; font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:28px; }
+.eyebrow::before { content:''; display:block; width:36px; height:1px; background:var(--gold); flex-shrink:0; }
+
+/* FIX 1: Hero h1 — explicit line breaks, no word-break issues */
+.hero-h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(48px,5.5vw,88px); font-weight:300; line-height:1.05; margin-bottom:28px; color:var(--white); }
+.hero-h1 em { font-style:italic; color:var(--gold); }
+
+.hero-para { font-size:15px; line-height:1.9; color:var(--muted); max-width:440px; margin-bottom:48px; }
+.hero-actions { display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
+
+.btn-gold { background:var(--gold); color:var(--dark); border:none; padding:15px 38px; font-family:'Jost',sans-serif; font-size:10.5px; letter-spacing:2.5px; text-transform:uppercase; font-weight:500; transition:background .25s,transform .25s; display:inline-flex; align-items:center; justify-content:center; }
+.btn-gold:hover { background:var(--gold-lt); transform:translateY(-2px); }
+.btn-text { background:none; border:none; font-size:10.5px; letter-spacing:2.5px; text-transform:uppercase; color:rgba(250,250,250,0.6); display:inline-flex; align-items:center; gap:10px; transition:color .25s; }
+.btn-text .arr { transition:transform .3s; }
+.btn-text:hover { color:var(--gold); }
+.btn-text:hover .arr { transform:translateX(5px); }
+
+/* FIX 2: Hero right — explicit height prevents card overlap/collapse */
+.hero-right { position:relative; z-index:2; height:500px; animation:riseUp 1s ease .2s both; }
+.hcard-main { position:absolute; top:0; right:0; width:min(320px,100%); height:420px; background:linear-gradient(150deg,#1e1608,#271b0b,#0f0f0f); border:1px solid rgba(201,169,110,0.22); padding:32px; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; }
+.hcard-badge { position:absolute; top:28px; left:0; background:var(--gold); color:var(--dark); padding:7px 18px; font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
+.hcard-emoji { font-size:60px; line-height:1; margin-bottom:14px; }
+.hcard-sub { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+.hcard-title { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; color:var(--white); line-height:1.2; }
+.hcard-accent { position:absolute; bottom:0; left:0; width:190px; height:240px; background:linear-gradient(140deg,rgba(201,169,110,0.12),rgba(201,169,110,0.04)); border:1px solid rgba(201,169,110,0.28); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:72px; color:rgba(201,169,110,0.18); font-weight:300; }
+
+.hero-scroll { position:absolute; bottom:36px; left:64px; display:flex; align-items:flex-end; gap:14px; font-size:9.5px; letter-spacing:4px; text-transform:uppercase; color:rgba(250,250,250,0.3); }
+.hero-scroll-line { width:1px; height:56px; background:linear-gradient(to bottom,var(--gold),transparent); animation:pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+
+/* FIX 3: Stats bar — flex with border-right dividers, no justify-around collapse */
+.stats-bar { background:var(--dark3); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:0 64px; display:flex; align-items:stretch; overflow-x:auto; }
+.stat-cell { flex:1 1 0; min-width:120px; padding:36px 20px; text-align:center; border-right:1px solid var(--border); }
+.stat-cell:last-child { border-right:none; }
+.stat-num { font-family:'Cormorant Garamond',serif; font-size:48px; font-weight:300; color:var(--gold); line-height:1; margin-bottom:8px; white-space:nowrap; }
+.stat-lbl { font-size:9.5px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+
+/* SECTIONS */
+.sec { padding:110px 64px; }
+.sec-alt { padding:110px 64px; background:var(--dark2); }
+.sec-head { margin-bottom:72px; }
+.sec-title { font-family:'Cormorant Garamond',serif; font-size:clamp(34px,3.8vw,58px); font-weight:300; line-height:1.1; color:var(--white); }
+.sec-title em { font-style:italic; color:var(--gold); }
+
+/* FIX 4: Services grid — auto-fit so it never breaks at odd widths */
+.svc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2px; }
+.svc-card { background:var(--dark2); padding:44px 36px; border:1px solid rgba(201,169,110,0.07); position:relative; overflow:hidden; transition:background .3s,transform .3s; }
+.svc-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
+.svc-card:hover { background:var(--dark3); transform:translateY(-3px); }
+.svc-card:hover::after { transform:scaleX(1); }
+.svc-num { position:absolute; top:20px; right:28px; font-family:'Cormorant Garamond',serif; font-size:56px; font-weight:300; color:rgba(201,169,110,0.05); line-height:1; pointer-events:none; }
+.svc-icon { font-size:38px; margin-bottom:22px; }
+.svc-name { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; color:var(--white); margin-bottom:14px; line-height:1.25; }
+.svc-desc { font-size:13.5px; line-height:1.85; color:var(--muted); margin-bottom:26px; }
+.svc-link { font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); display:inline-flex; align-items:center; gap:10px; transition:gap .3s; }
+.svc-card:hover .svc-link { gap:16px; }
+
+/* FEATURED */
+.feat-wrap { padding:0 64px 110px; }
+/* FIX 5: Featured block — explicit grid avoids crushing on medium screens */
+.feat-block { display:grid; grid-template-columns:minmax(320px,480px) 1fr; border:1px solid var(--border); min-height:520px; }
+.feat-visual { background:linear-gradient(140deg,#1a1208,#231908,#0f0f0f); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; min-height:360px; }
+.feat-visual::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 30%,rgba(201,169,110,0.14) 0%,transparent 60%),radial-gradient(circle at 70% 70%,rgba(201,169,110,0.07) 0%,transparent 50%); }
+/* FIX 6: Emoji grid — explicit fixed cell sizes */
+.emoji-grid { display:grid; grid-template-columns:repeat(3,76px); grid-template-rows:repeat(3,76px); gap:16px; position:relative; z-index:2; }
+.emoji-cell { width:76px; height:76px; border:1px solid rgba(201,169,110,0.18); display:flex; align-items:center; justify-content:center; font-size:32px; transition:border-color .25s,background .25s,transform .25s; }
+.emoji-cell:hover, .emoji-cell.hi { border-color:var(--gold); background:rgba(201,169,110,0.07); transform:scale(1.06); }
+.feat-info { background:var(--dark2); padding:56px 52px; display:flex; flex-direction:column; justify-content:center; }
+.pkg-badge { display:inline-block; background:rgba(201,169,110,0.1); border:1px solid rgba(201,169,110,0.28); color:var(--gold); padding:5px 14px; font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:28px; width:fit-content; }
+.feat-title { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:300; color:var(--white); line-height:1.1; margin-bottom:20px; }
+.feat-desc { font-size:14px; line-height:1.9; color:var(--muted); margin-bottom:32px; }
+.pkg-list { list-style:none; margin-bottom:36px; }
+.pkg-list li { font-size:13px; color:rgba(250,250,250,0.7); padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:12px; }
+.pkg-list li::before { content:'✦'; color:var(--gold); font-size:9px; flex-shrink:0; }
+.pkg-price { display:flex; align-items:baseline; gap:10px; margin-bottom:28px; }
+.price-from { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(250,250,250,0.4); }
+.price-num { font-family:'Cormorant Garamond',serif; font-size:46px; font-weight:300; color:var(--gold); line-height:1; }
+
+/* FIX 7: Gallery grid — corrected span + explicit row heights */
+.gal-grid { display:grid; grid-template-columns:2fr 1fr 1fr; grid-template-rows:260px 260px; gap:8px; margin-top:64px; }
+.g-item { position:relative; overflow:hidden; cursor:pointer; }
+.g-item:first-child { grid-row:span 2; }
+.g-thumb { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:52px; transition:transform .6s ease; }
+.g-item:nth-child(1) .g-thumb { background:linear-gradient(140deg,#1a1208,#2d1e0a); }
+.g-item:nth-child(2) .g-thumb { background:linear-gradient(140deg,#0d1a12,#0a1e10); }
+.g-item:nth-child(3) .g-thumb { background:linear-gradient(140deg,#1a0d0d,#2a1010); }
+.g-item:nth-child(4) .g-thumb { background:linear-gradient(140deg,#0d0d1a,#10102a); }
+.g-item:nth-child(5) .g-thumb { background:linear-gradient(140deg,#1a1a0d,#2a2a10); }
+.g-item:hover .g-thumb { transform:scale(1.06); }
+.g-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,transparent 55%); opacity:0; transition:opacity .35s; display:flex; align-items:flex-end; padding:22px 24px; }
+.g-item:hover .g-overlay { opacity:1; }
+.g-label { font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--white); display:block; }
+.g-sub { font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-top:4px; display:block; }
+
+/* FIX 8: Process — reliable connector line via pseudo on wrapper */
+.proc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:80px; position:relative; }
+.proc-grid::before { content:''; position:absolute; top:27px; left:calc(12.5% + 4px); right:calc(12.5% + 4px); height:1px; background:linear-gradient(to right,transparent 0%,rgba(201,169,110,0.35) 15%,rgba(201,169,110,0.35) 85%,transparent 100%); pointer-events:none; }
+.proc-step { padding:0 24px; text-align:center; }
+.proc-dot { width:54px; height:54px; border:1px solid rgba(201,169,110,0.35); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 30px; background:var(--dark2); position:relative; z-index:1; transition:all .3s; }
+.proc-step:hover .proc-dot { background:var(--gold); border-color:var(--gold); }
+.proc-title { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--white); margin-bottom:12px; }
+.proc-desc { font-size:13px; line-height:1.85; color:var(--muted); }
+
+/* TESTIMONIALS */
+.testi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:32px; margin-top:64px; }
+.testi-card { padding:36px; border:1px solid rgba(201,169,110,0.1); transition:border-color .3s; }
+.testi-card:hover { border-color:rgba(201,169,110,0.3); }
+.testi-stars { color:var(--gold); font-size:12px; letter-spacing:3px; margin-bottom:18px; }
+.testi-q { font-family:'Cormorant Garamond',serif; font-size:72px; color:rgba(201,169,110,0.12); line-height:.8; margin-bottom:18px; }
+.testi-text { font-family:'Cormorant Garamond',serif; font-size:17.5px; font-style:italic; line-height:1.75; color:rgba(250,250,250,0.8); margin-bottom:28px; }
+.testi-author { display:flex; align-items:center; gap:14px; }
+.testi-av { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,rgba(201,169,110,0.25),rgba(201,169,110,0.08)); border:1px solid rgba(201,169,110,0.25); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.testi-name { font-size:13.5px; font-weight:400; color:var(--white); margin-bottom:4px; }
+.testi-role { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); }
+
+/* CTA */
+.cta-sec { padding:148px 64px; text-align:center; position:relative; overflow:hidden; }
+.cta-sec::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 65% 55% at center,rgba(201,169,110,0.07),transparent); pointer-events:none; }
+.cta-bg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Cormorant Garamond',serif; font-size:clamp(100px,16vw,200px); font-weight:300; color:rgba(201,169,110,0.03); white-space:nowrap; pointer-events:none; letter-spacing:-8px; line-height:1; }
+.cta-inner { position:relative; z-index:2; }
+.cta-title { font-family:'Cormorant Garamond',serif; font-size:clamp(38px,4.5vw,68px); font-weight:300; color:var(--white); line-height:1.1; margin-bottom:22px; }
+.cta-title em { font-style:italic; color:var(--gold); }
+.cta-sub { font-size:14.5px; color:var(--muted); max-width:460px; margin:0 auto 48px; line-height:1.85; }
+
+/* FOOTER */
+footer { background:#070707; border-top:1px solid var(--border); padding:80px 64px 36px; }
+.ft-cols { display:grid; grid-template-columns:2fr repeat(3,1fr); gap:56px; margin-bottom:56px; }
+.ft-brand-desc { font-size:13px; line-height:1.9; color:rgba(250,250,250,0.4); margin:18px 0 24px; max-width:260px; }
+.wp-pill { display:inline-flex; align-items:center; gap:8px; background:rgba(33,117,155,0.12); border:1px solid rgba(33,117,155,0.35); color:#5BADD0; padding:5px 14px; font-size:10.5px; letter-spacing:2px; text-transform:uppercase; }
+.ft-col h4 { font-size:9.5px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:22px; }
+.ft-col ul { list-style:none; }
+.ft-col ul li { margin-bottom:11px; }
+.ft-col ul li a { font-size:13px; color:rgba(250,250,250,0.4); transition:color .25s; }
+.ft-col ul li a:hover { color:var(--gold); }
+.ft-bottom { border-top:1px solid rgba(255,255,255,0.05); padding-top:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.ft-bottom p { font-size:11.5px; color:rgba(250,250,250,0.28); }
+.ft-bottom span { color:var(--gold); }
+
+/* MODAL */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.87); backdrop-filter:blur(12px); z-index:2000; align-items:center; justify-content:center; padding:24px; }
+.modal-bg.open { display:flex; }
+.modal-box { background:var(--dark2); border:1px solid rgba(201,169,110,0.28); padding:56px; width:100%; max-width:500px; position:relative; animation:riseUp .35s ease both; }
+.modal-close { position:absolute; top:18px; right:22px; background:none; border:none; color:rgba(250,250,250,0.4); font-size:22px; transition:color .2s; }
+.modal-close:hover { color:var(--white); }
+.modal-title { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:300; color:var(--white); margin-bottom:32px; line-height:1.15; }
+.modal-title em { font-style:italic; color:var(--gold); }
+.form-fields { display:grid; gap:14px; }
+.form-fields input, .form-fields select, .form-fields textarea { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(201,169,110,0.18); padding:13px 18px; color:var(--white); font-family:'Jost',sans-serif; font-size:13.5px; font-weight:300; outline:none; transition:border-color .25s; }
+.form-fields input::placeholder, .form-fields textarea::placeholder { color:rgba(250,250,250,0.3); }
+.form-fields input:focus, .form-fields select:focus, .form-fields textarea:focus { border-color:rgba(201,169,110,0.5); }
+.form-fields select { -webkit-appearance:none; appearance:none; background-color:var(--dark2); color:rgba(250,250,250,0.6); }
+.form-fields textarea { resize:none; }
+
+/* TOAST */
+.toast { position:fixed; bottom:36px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--gold); color:var(--dark); padding:14px 32px; font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:500; z-index:9999; opacity:0; transition:all .4s ease; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1200px) {
+  .feat-block { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:1024px) {
+  #navbar,#navbar.stuck { padding:18px 32px; }
+  .nav-links,.nav-btn { display:none; }
+  .nav-ham { display:flex; }
+  .hero { grid-template-columns:1fr; padding:120px 32px 80px; }
+  .hero-right { display:none; }
+  .hero-scroll { left:32px; }
+  .stats-bar { padding:0 32px; }
+  .sec,.sec-alt { padding:80px 32px; }
+  .feat-wrap { padding:0 32px 80px; }
+  .feat-block { grid-template-columns:1fr; }
+  .feat-visual { min-height:280px; }
+  .feat-info { padding:40px 36px; }
+  .gal-grid { grid-template-columns:repeat(2,1fr); grid-template-rows:220px 220px 220px; }
+  .g-item:first-child { grid-row:span 1; }
+  .proc-grid { grid-template-columns:repeat(2,1fr); gap:40px; }
+  .proc-grid::before { display:none; }
+  .ft-cols { grid-template-columns:1fr 1fr; gap:40px; }
+  .cta-sec { padding:100px 32px; }
+  footer { padding:64px 32px 32px; }
+}
+@media (max-width:640px) {
+  #navbar,#navbar.stuck { padding:16px 20px; }
+  .hero { padding:100px 20px 64px; }
+  .hero-scroll { left:20px; }
+  .stats-bar { padding:0; flex-wrap:wrap; }
+  .stat-cell { flex:0 0 50%; border-right:none; border-bottom:1px solid var(--border); padding:24px 16px; }
+  .stat-cell:nth-child(odd) { border-right:1px solid var(--border); }
+  .stat-cell:last-child { border-bottom:none; }
+  .stat-num { font-size:38px; }
+  .sec,.sec-alt { padding:64px 20px; }
+  .feat-wrap { padding:0 20px 64px; }
+  .feat-info { padding:32px 24px; }
+  .feat-title { font-size:32px; }
+  .gal-grid { grid-template-columns:1fr; grid-template-rows:repeat(5,200px); }
+  .g-item:first-child { grid-row:span 1; }
+  .proc-grid { grid-template-columns:1fr; gap:48px; }
+  .proc-step { padding:0; }
+  .ft-cols { grid-template-columns:1fr; gap:36px; }
+  footer { padding:56px 20px 28px; }
+  .cta-sec { padding:80px 20px; }
+  .modal-box { padding:36px 24px; }
+  .ft-bottom { flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="logo">É<em>CLAT</em> Events</div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-btn" onclick="openModal()">Plan Your Event</button>
+  <button class="nav-ham" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-gridlines" aria-hidden="true"></div>
+
+  <div class="hero-left">
+    <div class="eyebrow">Luxury Event Planning</div>
+    <h1 class="hero-h1">Where Every<br>Moment Becomes<br><em>Unforgettable</em></h1>
+    <p class="hero-para">From intimate gatherings to grand celebrations, we craft extraordinary experiences that linger long after the last guest has gone.</p>
+    <div class="hero-actions">
+      <button class="btn-gold" onclick="openModal()">Start Planning</button>
+      <button class="btn-text" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Explore Services <span class="arr">→</span></button>
+    </div>
+  </div>
+
+  <div class="hero-right" aria-hidden="true">
+    <div class="hcard-main">
+      <div class="hcard-badge">Featured Wedding</div>
+      <div class="hcard-emoji">🌸</div>
+      <div class="hcard-sub">Royal Collection</div>
+      <div class="hcard-title">The Grand<br>Garden Affair</div>
+    </div>
+    <div class="hcard-accent">✦</div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <div class="hero-scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-cell"><div class="stat-num">500+</div><div class="stat-lbl">Events Delivered</div></div>
+  <div class="stat-cell"><div class="stat-num">12</div><div class="stat-lbl">Years Experience</div></div>
+  <div class="stat-cell"><div class="stat-num">98%</div><div class="stat-lbl">Client Satisfaction</div></div>
+  <div class="stat-cell"><div class="stat-num">45+</div><div class="stat-lbl">Venue Partners</div></div>
+  <div class="stat-cell"><div class="stat-num">30+</div><div class="stat-lbl">Expert Team</div></div>
+</div>
+
+<!-- SERVICES -->
+<section class="sec" id="services">
+  <div class="sec-head">
+    <div class="eyebrow">What We Do</div>
+    <h2 class="sec-title">Crafting Every Detail With <em>Precision</em></h2>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card reveal"><div class="svc-num">01</div><div class="svc-icon">💍</div><h3 class="svc-name">Wedding Planning</h3><p class="svc-desc">Full-service wedding management from venue selection to last dance. We handle every detail so you can cherish every moment.</p><div class="svc-link">Explore →</div></div>
+    <div class="svc-card reveal"><div class="svc-num">02</div><div class="svc-icon">🏢</div><h3 class="svc-name">Corporate Events</h3><p class="svc-desc">Conferences, product launches, team offsites — we create professional events that elevate your brand and engage your audience.</p><div class="svc-link">Explore →</div></div>
+    <div class="svc-card reveal"><div class="svc-num">03</div><div class="svc-icon">🎉</div><h3 class="svc-name">Birthday Celebrations</h3><p class="svc-desc">From milestone birthdays to intimate dinners, we design celebrations that perfectly capture your personality and vision.</p><div class="svc-link">Explore →</div></div>
+    <div class="svc-card reveal"><div class="svc-num">04</div><div class="svc-icon">🌸</div><h3 class="svc-name">Baby Showers &amp; Engagements</h3><p class="svc-desc">Tender, thoughtful celebrations for life's most precious milestones — styled with elegance and filled with love.</p><div class="svc-link">Explore →</div></div>
+    <div class="svc-card reveal"><div class="svc-num">05</div><div class="svc-icon">🎭</div><h3 class="svc-name">Theme Parties</h3><p class="svc-desc">Immersive themed experiences with custom décor, costumes, entertainment, and curated menus that transport guests.</p><div class="svc-link">Explore →</div></div>
+    <div class="svc-card reveal"><div class="svc-num">06</div><div class="svc-icon">🎪</div><h3 class="svc-name">Social Galas</h3><p class="svc-desc">Charity galas, award nights, and social fundraisers — we produce prestigious events that inspire and leave lasting impressions.</p><div class="svc-link">Explore →</div></div>
+  </div>
+</section>
+
+<!-- FEATURED PACKAGE -->
+<div class="feat-wrap">
+  <div class="feat-block reveal">
+    <div class="feat-visual">
+      <div class="emoji-grid">
+        <div class="emoji-cell">💐</div><div class="emoji-cell hi">🕯️</div><div class="emoji-cell">🥂</div>
+        <div class="emoji-cell">🎶</div><div class="emoji-cell hi">💍</div><div class="emoji-cell">🌹</div>
+        <div class="emoji-cell">🎂</div><div class="emoji-cell">✨</div><div class="emoji-cell hi">🎊</div>
+      </div>
+    </div>
+    <div class="feat-info">
+      <div class="pkg-badge">⭐ Most Popular</div>
+      <h2 class="feat-title">The Grand Wedding Package</h2>
+      <p class="feat-desc">Our most comprehensive wedding package — covering everything from the first consultation to your final farewell dance.</p>
+      <ul class="pkg-list">
+        <li>Full venue scouting &amp; booking coordination</li>
+        <li>Floral design &amp; décor styling</li>
+        <li>Catering management &amp; menu curation</li>
+        <li>Entertainment, DJ &amp; AV setup</li>
+        <li>Photography &amp; videography coordination</li>
+        <li>Day-of coordination (12-hour team)</li>
+      </ul>
+      <div class="pkg-price"><span class="price-from">Starting from</span><span class="price-num">₹2.5L</span></div>
+      <button class="btn-gold" onclick="openModal()">Enquire Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<section class="sec" id="gallery">
+  <div class="sec-head">
+    <div class="eyebrow">Portfolio</div>
+    <h2 class="sec-title">Stories We've <em>Crafted</em></h2>
+  </div>
+  <div class="gal-grid">
+    <div class="g-item reveal"><div class="g-thumb">🌸💐🌺</div><div class="g-overlay"><div><span class="g-label">The Kapoor Wedding</span><span class="g-sub">Grand Wedding · Delhi · 2024</span></div></div></div>
+    <div class="g-item reveal"><div class="g-thumb">🏢✨</div><div class="g-overlay"><div><span class="g-label">TechSummit 2024</span><span class="g-sub">Corporate · Mumbai</span></div></div></div>
+    <div class="g-item reveal"><div class="g-thumb">🎉🎂</div><div class="g-overlay"><div><span class="g-label">Priya's 30th</span><span class="g-sub">Birthday · Bangalore</span></div></div></div>
+    <div class="g-item reveal"><div class="g-thumb">💍🥂</div><div class="g-overlay"><div><span class="g-label">Sharma Engagement</span><span class="g-sub">Engagement · Jaipur</span></div></div></div>
+    <div class="g-item reveal"><div class="g-thumb">🌹🕯️</div><div class="g-overlay"><div><span class="g-label">Charity Gala Night</span><span class="g-sub">Social Gala · Chennai</span></div></div></div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="sec-alt" id="process">
+  <div class="sec-head">
+    <div class="eyebrow">How It Works</div>
+    <h2 class="sec-title">Our <em>Simple</em> Process</h2>
+  </div>
+  <div class="proc-grid">
+    <div class="proc-step reveal"><div class="proc-dot">💬</div><h3 class="proc-title">Consultation</h3><p class="proc-desc">Share your vision, budget, and expectations with our dedicated planner in a free 60-minute session.</p></div>
+    <div class="proc-step reveal"><div class="proc-dot">📋</div><h3 class="proc-title">Proposal</h3><p class="proc-desc">We craft a detailed, customised event proposal with packages, timeline, and vendor suggestions.</p></div>
+    <div class="proc-step reveal"><div class="proc-dot">🎨</div><h3 class="proc-title">Design &amp; Plan</h3><p class="proc-desc">Our team handles every booking, styling, and logistics decision — keeping you informed at each step.</p></div>
+    <div class="proc-step reveal"><div class="proc-dot">🎊</div><h3 class="proc-title">Event Day</h3><p class="proc-desc">Sit back and celebrate. Our team is on-ground from setup to final goodbye, ensuring zero stress.</p></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec" id="testimonials">
+  <div class="sec-head">
+    <div class="eyebrow">Client Stories</div>
+    <h2 class="sec-title">What Our Clients <em>Say</em></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div><div class="testi-q">"</div>
+      <p class="testi-text">They turned our dream wedding into a fairy tale. Every detail was perfect — from the floral arch to the final song. We are forever grateful.</p>
+      <div class="testi-author"><div class="testi-av">👰</div><div><div class="testi-name">Priya &amp; Arjun Sharma</div><div class="testi-role">Wedding · Delhi</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div><div class="testi-q">"</div>
+      <p class="testi-text">Our annual corporate summit was flawlessly executed. 400+ guests, 2 days, zero hiccups. The team's professionalism is unmatched.</p>
+      <div class="testi-author"><div class="testi-av">👔</div><div><div class="testi-name">Rajan Mehta</div><div class="testi-role">Corporate Event · Mumbai</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div><div class="testi-q">"</div>
+      <p class="testi-text">My 40th birthday party was absolutely magical. They captured my personality in every decoration and surprised me beyond imagination!</p>
+      <div class="testi-author"><div class="testi-av">🎂</div><div><div class="testi-name">Sunitha Krishnan</div><div class="testi-role">Birthday · Bangalore</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec" id="contact">
+  <div class="cta-bg" aria-hidden="true">éclat</div>
+  <div class="cta-inner">
+    <div class="eyebrow" style="justify-content:center;margin-bottom:18px;">Get In Touch</div>
+    <h2 class="cta-title">Ready to Create<br>Something <em>Beautiful?</em></h2>
+    <p class="cta-sub">Let's begin with a conversation. Tell us your vision and we'll take care of everything else.</p>
+    <button class="btn-gold" style="padding:16px 52px;font-size:11px;" onclick="openModal()">Book a Free Consultation</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-cols">
+    <div>
+      <div class="logo">É<em>CLAT</em> Events</div>
+      <p class="ft-brand-desc">Chennai's premier event planning studio, crafting extraordinary celebrations since 2012. Every event is a masterpiece.</p>
+      <div class="wp-pill">⚡ Built on WordPress</div>
+    </div>
+    <div class="ft-col">
+      <h4>Services</h4>
+      <ul><li><a href="#">Wedding Planning</a></li><li><a href="#">Corporate Events</a></li><li><a href="#">Birthday Parties</a></li><li><a href="#">Engagements</a></li><li><a href="#">Theme Events</a></li></ul>
+    </div>
+    <div class="ft-col">
+      <h4>Company</h4>
+      <ul><li><a href="#">About Us</a></li><li><a href="#">Our Team</a></li><li><a href="#">Portfolio</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li></ul>
+    </div>
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <ul><li><a href="#">📍 Chennai, Tamil Nadu</a></li><li><a href="#">📞 +91 98765 43210</a></li><li><a href="#">✉️ hello@eclatevents.in</a></li><li><a href="#">🕐 Mon–Sat, 10AM–7PM</a></li></ul>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <p>© 2025 Éclat Events. All rights reserved — <span>Client Reference Demo</span></p>
+    <p>WordPress + Elementor + WooCommerce</p>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow" style="margin-bottom:12px;">Free Consultation</div>
+    <h2 class="modal-title">Plan Your <em>Event</em></h2>
+    <div class="form-fields">
+      <input type="text" placeholder="Your Name">
+      <input type="email" placeholder="Email Address">
+      <input type="tel" placeholder="Phone Number">
+      <select><option value="" disabled selected>Select Event Type</option><option>Wedding</option><option>Corporate Event</option><option>Birthday Party</option><option>Engagement</option><option>Theme Party</option><option>Social Gala</option></select>
+      <textarea rows="4" placeholder="Tell us about your dream event…"></textarea>
+      <button class="btn-gold" style="padding:16px;font-size:11px;" onclick="submitForm()">Send Enquiry ✦</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✦ Thank you! We'll be in touch within 24 hours.</div>
+
+<script>
+// Navbar
+const nb = document.getElementById('navbar');
+window.addEventListener('scroll', () => nb.classList.toggle('stuck', scrollY > 60), {passive:true});
+
+// Modal
+function openModal() { document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// Submit
+function submitForm() {
+  closeModal();
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+// Reveal on scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'), i*80); obs.unobserve(e.target); }
+  });
+}, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
